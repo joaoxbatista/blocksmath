@@ -221,10 +221,14 @@ def nivel(mapa1, limite):
 	fps = 20
 	sair = False
 
-	backgroud = pygame.image.load('imgs/background.jpg')
+	tempo_restante = (limite*4)
+
+	backgroud = pygame.image.load('imgs/background2.png')
+	textura = pygame.image.load('imgs/glass.png')
+
 	pygame.font.init()
 	fonte = pygame.font.get_default_font()
-	titulo = pygame.font.SysFont(fonte, 24)
+	titulo = pygame.font.SysFont(fonte, 16)
 	texto = pygame.font.SysFont(fonte, 16)
 	h1_pontos = titulo.render("Blocos coletados: ", 1, (0, 255, 0))
 
@@ -241,41 +245,35 @@ def nivel(mapa1, limite):
 
 			movePlayer(evento, nivel1)
 		
-		 	if jogador['blocos'] > limite_blocos:
-		 		jogador['blocos'] = 0
-		 		jogador['rect'] = pygame.Rect((5, 10), (20, 20))
-		 		endlevel('lose') 
+	 	if (jogador['blocos'] > limite_blocos) or (tempo_restante <= 0):
+	 		tempo_restante = (limite*4)
+	 		jogador['blocos'] = 0
+	 		jogador['rect'] = pygame.Rect((5, 10), (20, 20))
+	 		endlevel('lose') 
 		 		
 	
 		relogio.tick(fps)
 
 		tela.fill((0,0,0))
-		tela.blit(backgroud, (0,0))
 		
-		h1_energia = titulo.render("Energia: "+str(jogador['energia']), 1, (0, 255, 0))
-		h1_blocos = titulo.render("Blocos restantes: "+str(limite_blocos - jogador['blocos']), 1, (0, 255, 0))
-		h1_pontos = titulo.render("Pontos: "+str(jogador['pontos']), 1, (255, 255, 255))
+		segundos = pygame.time.get_ticks()/1000
+		tempo_restante = (limite*4) - segundos
 
-		p_objetivo = texto.render("Colete os blocos verdes", 1, (255, 255, 255))
-		p_obs = texto.render("E necessario ter 220 de energia", 1, (255, 255, 255))
-		p_bazul = titulo.render("Bloco azul = +10", 1, (0, 0, 255))
-		p_broxo = titulo.render("Bloco roxo = +5", 1, (255, 0, 255))
-		p_bamarelo = titulo.render("Bloco amarelo = -5", 1, (255, 255, 0))
-		p_bvermelho = titulo.render("Bloco vermelho = -10", 1, (255, 0, 0))
-
-		tela.blit(h1_energia, (10, 240))
-		tela.blit(h1_blocos, (200, 260))
-		tela.blit(h1_pontos, (200, 240))
-
-		tela.blit(p_objetivo, (10, 260))
-		tela.blit(p_obs, (10, 275))
-		tela.blit(p_bazul, (410, 240))
-		tela.blit(p_broxo, (410, 260))
-		tela.blit(p_bvermelho, (410, 280))
-		tela.blit(p_bamarelo, (410, 300))
+		h1_energia = titulo.render(str(jogador['energia']), 1, (30, 30, 30))
+		h1_blocos = titulo.render(str(limite_blocos - jogador['blocos']), 1, (30, 30, 30))
+		h1_pontos = titulo.render(str(jogador['pontos']), 1, (30, 30, 30))
+		h1_tempo = titulo.render(str(tempo_restante), 1, (30, 30, 30))
 
 		printObjects(tela, nivel1)
 		pygame.draw.rect(tela, (255, 255, 255), jogador['rect'])
+
+		tela.blit(backgroud, (0,0))
+		tela.blit(h1_energia, (314, 270))
+		tela.blit(h1_tempo, (314, 316))
+		tela.blit(h1_blocos, (232, 316))
+		tela.blit(h1_pontos, (232, 270))
+		tela.blit(textura, (5,10))
+
 		pygame.display.update()
 
 
