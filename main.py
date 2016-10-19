@@ -1,5 +1,6 @@
 import pygame, sys
 
+#PROPRIEDADE GLOBAIS DO JOGADOR
 jogador = {}
 jogador['energia'] = 100
 jogador['pontos'] = 0
@@ -9,6 +10,9 @@ jogador['tempo'] = 0
 jogador['next'] = False
 limite_blocos = 0
 
+#MAPAS DO JOGO
+
+#MAPA 1
 mapa0 = [
 	'x1111111111111111',
 	'13222311111233121',
@@ -17,6 +21,8 @@ mapa0 = [
 	'12333313320234311',
 	'11111111111111111',
 	]
+
+#MAPA 2
 mapa1 = [
 	'x1111111111111111',
 	'0323311111233121',
@@ -25,15 +31,18 @@ mapa1 = [
 	'12333323320234311',
 	'11111222111111111',
 	]
+
+#MAPA 3
 mapa2 = [
-	'x1110023202323002',
-	'12223133333323323',
-	'12113232430012211',
-	'13321231222233311',
-	'12333313320234333',
+	'x11xxx23202323002',
+	'1222xx33333323323',
+	'1211x232430012211',
+	'133212x1222233311',
+	'123333xx320234333',
 	'12223331312220010',
 	]
 
+#FUNÇAO QUE CONVERTE ARRAY EM BLOCOS E ADICIONA A LISTA
 def getObjects(mapa):
 
 	bvd = []
@@ -63,6 +72,7 @@ def getObjects(mapa):
 			y +=1
 	return [bvd, bvm, baz, bam, objetivo]
 
+#FUNÇAO QUE DESENHA OS BLOCOS NA TELA
 def printObjects(tela, objetos):
 
 	x = 0
@@ -92,6 +102,7 @@ def printObjects(tela, objetos):
 
 		x += 1 
 
+#FUNÇAO QUE VERIFICA COLISAO
 def collideObjects(objetos):
 	pygame.mixer.init()
 	energiaup = pygame.mixer.Sound('sounds/energiup.ogg')
@@ -145,7 +156,8 @@ def collideObjects(objetos):
  		 		endlevel('win')
 
 		x += 1
- 
+
+#FUNÇAO DE MOVIMENTAÇAO DO JOGADOR
 def movePlayer(evento, nivel):
 
 	xant, yant = jogador['rect'].left, jogador['rect'].top
@@ -174,7 +186,9 @@ def movePlayer(evento, nivel):
 	if jogador['rect'].top < 0 or jogador['rect'].top > 200:
 		jogador['rect'].top = yant
 
+#FUNÇAO QUE DESENHA A TELA DO MENU
 def menu():
+
 	pygame.init()
 	jogador['next'] = False
 	tela = pygame.display.set_mode((460, 420))
@@ -184,7 +198,12 @@ def menu():
 	sair = False
 
 	background = pygame.image.load('imgs/menu.jpg')
+	
+	pygame.mixer.init()
+	music = pygame.mixer.Sound('sounds/music.ogg')
 
+	music.play()
+	
 	while sair != True:
 
 		for evento in pygame.event.get():
@@ -199,7 +218,7 @@ def menu():
 				if evento.key == pygame.K_2:
 					nivel(mapa1, 30)
 				if evento.key == pygame.K_3:
-					nivel(mapa2, 25)
+					nivel(mapa2, 30)
 				if evento.key == pygame.K_4:
 					pygame.quit()
 
@@ -208,6 +227,7 @@ def menu():
 		pygame.display.update()
 		relogio.tick(fps)
 
+#FUNCAO DESENHA A TELA DO NIVEL
 def nivel(mapa1, limite):
 	
 	nivel1 = getObjects(mapa1)
@@ -276,7 +296,7 @@ def nivel(mapa1, limite):
 
 		pygame.display.update()
 
-
+#FUNCAO QUE DESENHA A TELA DE RESULTADO
 def endlevel(result):
 
 	pygame.init()
