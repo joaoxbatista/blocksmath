@@ -1,4 +1,5 @@
-import pygame, sys
+#-*- coding: latin1 -*-
+import pygame, sys, time
 
 #PROPRIEDADE GLOBAIS DO JOGADOR
 jogador = {}
@@ -233,15 +234,15 @@ def nivel(mapa1, limite):
 	nivel1 = getObjects(mapa1)
 	pygame.init()
 	limite_blocos = limite
-
 	largura, altura = (590, 350)
 	tela = pygame.display.set_mode((largura, altura))
 	pygame.display.set_caption("Jogo 1")
-	relogio = pygame.time.Clock()
+	
 	fps = 20
 	sair = False
 
-	tempo_restante = (limite*4)
+	relogio = pygame.time.Clock()
+	t0 = int(time.time())
 
 	backgroud = pygame.image.load('imgs/background2.png')
 	textura = pygame.image.load('imgs/glass.png')
@@ -264,9 +265,14 @@ def nivel(mapa1, limite):
 				menu()
 
 			movePlayer(evento, nivel1)
+
 		
-	 	if (jogador['blocos'] > limite_blocos) or (tempo_restante <= 0):
-	 		tempo_restante = (limite*4)
+		
+		t1 = int(time.time())
+		dt = t1 - t0
+		tr = (limite_blocos*4) - dt
+		
+	 	if (jogador['blocos'] > limite_blocos or tr <= 0):
 	 		jogador['blocos'] = 0
 	 		jogador['rect'] = pygame.Rect((5, 10), (20, 20))
 	 		endlevel('lose') 
@@ -276,13 +282,11 @@ def nivel(mapa1, limite):
 
 		tela.fill((0,0,0))
 		
-		segundos = pygame.time.get_ticks()/1000
-		tempo_restante = (limite*4) - segundos
-
+		
 		h1_energia = titulo.render(str(jogador['energia']), 1, (30, 30, 30))
 		h1_blocos = titulo.render(str(limite_blocos - jogador['blocos']), 1, (30, 30, 30))
 		h1_pontos = titulo.render(str(jogador['pontos']), 1, (30, 30, 30))
-		h1_tempo = titulo.render(str(tempo_restante), 1, (30, 30, 30))
+		h1_tempo = titulo.render(str(tr), 1, (30, 30, 30))
 
 		printObjects(tela, nivel1)
 		pygame.draw.rect(tela, (255, 255, 255), jogador['rect'])
@@ -325,10 +329,13 @@ def endlevel(result):
 		if result == "win":
 			color = green
 			text = "You Win"
-		else:
+
+		elif result == "lose":
 			color = red
 			text = "You Lose"
 
+ 		jogador['blocos'] = 0
+ 		
 		tela.fill(color)
 		texto = h1.render(text, 1, white)
 		tela.blit(texto, (200, 240))
