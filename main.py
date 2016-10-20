@@ -9,39 +9,49 @@ jogador['rect'] = pygame.Rect((5, 10), (20, 20))
 jogador['blocos'] = 0
 jogador['tempo'] = 0
 jogador['next'] = False
+jogador['level'] = 0
 limite_blocos = 0
 
 #MAPAS DO JOGO
 
-#MAPA 1
-mapa0 = [
-	'x1111111111111111',
-	'13222311111233121',
-	'12113232430012211',
-	'13320222110022331',
-	'12333313320234311',
-	'11111111111111111',
-	]
+mapas = [
 
-#MAPA 2
-mapa1 = [
-	'x1111111111111111',
-	'0323311111233121',
-	'02114232430012211',
-	'33320222110022331',
-	'12333323320234311',
-	'11111222111111111',
-	]
+	[
+		'xx121333x12322201',
+		'1x2223x111x2x3101',
+		'1211323243001x211',
+		'13320222x10022331',
+		'1233x313320234311',
+		'11x1x11x32x111111',
+	],
 
-#MAPA 3
-mapa2 = [
-	'x11xxx23202323002',
-	'1222xx33333323323',
-	'1211x232430012211',
-	'133212x1222233311',
-	'123333xx320234333',
-	'12223331312220010',
-	]
+	[
+		'x111x322123111111',
+		'03233x1114232121',
+		'0211432x430012211',
+		'333202221x0x22331',
+		'12333123320x34311',
+		'11141223231xx1111',
+	],
+
+	[
+		'x11xxx23202323002',
+		'1222xx33333323323',
+		'1211x232430012211',
+		'133212x1222233311',
+		'123333xx320234333',
+		'12223331312220010',
+	],
+
+	[
+		'x11xxx23202323002',
+		'1222xx33333323323',
+		'1211x232430012211',
+		'133212x1222233311',
+		'123333xx320234333',
+		'12223331312220010',
+	],
+]
 
 #FUNÇAO QUE CONVERTE ARRAY EM BLOCOS E ADICIONA A LISTA
 def getObjects(mapa):
@@ -105,6 +115,7 @@ def printObjects(tela, objetos):
 
 #FUNÇAO QUE VERIFICA COLISAO
 def collideObjects(objetos):
+
 	pygame.mixer.init()
 	energiaup = pygame.mixer.Sound('sounds/energiup.ogg')
 	energiadown = pygame.mixer.Sound('sounds/energidown.ogg')
@@ -168,7 +179,6 @@ def movePlayer(evento, nivel):
 		if evento.key == pygame.K_w:
 			jogador['rect'].move_ip(0, -35)
 			collideObjects(nivel)
-			print "W"
 
 		if evento.key == pygame.K_s:
 			jogador['rect'].move_ip(0, 35)
@@ -204,9 +214,10 @@ def menu():
 	music = pygame.mixer.Sound('sounds/music.ogg')
 
 	music.play()
-	
-	while sair != True:
+	level = 0
 
+	while sair != True:
+		
 		for evento in pygame.event.get():
 			if evento.type == pygame.QUIT:
 				pygame.quit()
@@ -214,29 +225,48 @@ def menu():
 			if evento.type == pygame.KEYDOWN:
 		
 				if evento.key == pygame.K_1:
-					pygame.quit()
-					nivel(mapa0, 40)
+					level = 1
+					sair = True
 				if evento.key == pygame.K_2:
-					nivel(mapa1, 30)
+					level = 2
+					sair = True
 				if evento.key == pygame.K_3:
-					nivel(mapa2, 30)
+					level = 3
+					sair = True
 				if evento.key == pygame.K_4:
-					pygame.quit()
+					sair = True
 
 		tela.blit(background, (0, 0))
-
 		pygame.display.update()
 		relogio.tick(fps)
 
+	nivel(mapas, level)
+
 #FUNCAO DESENHA A TELA DO NIVEL
-def nivel(mapa1, limite):
+def nivel(mapas, dificuldade):
 	
-	nivel1 = getObjects(mapa1)
+	if dificuldade == 1:
+		limite_blocos = 40
+		tempo_limite = 60
+		title = "Blocks Math - Dificuldade: Fácil"
+
+	elif dificuldade == 2:
+		limite_blocos = 35
+		tempo_limite = 50
+		title = "Blocks Math - Dificuldade: Médio"
+
+	elif dificuldade == 3:
+		limite_blocos = 35
+		tempo_limite = 40
+		title = "Blocks Math - Dificuldade: Difícil"
+	
+	print jogador['level']
+	mapa = getObjects(mapas[jogador['level']])
 	pygame.init()
-	limite_blocos = limite
+	
 	largura, altura = (590, 350)
 	tela = pygame.display.set_mode((largura, altura))
-	pygame.display.set_caption("Jogo 1")
+	pygame.display.set_caption(title)
 	
 	fps = 20
 	sair = False
@@ -253,8 +283,6 @@ def nivel(mapa1, limite):
 	texto = pygame.font.SysFont(fonte, 16)
 	h1_pontos = titulo.render("Blocos coletados: ", 1, (0, 255, 0))
 
-
-
 	while sair != True:
 
 		for evento in pygame.event.get():
@@ -264,13 +292,13 @@ def nivel(mapa1, limite):
 				pygame.quit()
 				menu()
 
-			movePlayer(evento, nivel1)
+			movePlayer(evento, mapa)
 
 		
 		
 		t1 = int(time.time())
 		dt = t1 - t0
-		tr = (limite_blocos*4) - dt
+		tr = tempo_limite - dt
 		
 	 	if (jogador['blocos'] > limite_blocos or tr <= 0):
 	 		jogador['blocos'] = 0
@@ -288,7 +316,7 @@ def nivel(mapa1, limite):
 		h1_pontos = titulo.render(str(jogador['pontos']), 1, (30, 30, 30))
 		h1_tempo = titulo.render(str(tr), 1, (30, 30, 30))
 
-		printObjects(tela, nivel1)
+		printObjects(tela, mapa)
 		pygame.draw.rect(tela, (255, 255, 255), jogador['rect'])
 
 		tela.blit(backgroud, (0,0))
@@ -307,7 +335,7 @@ def endlevel(result):
 
 	largura, altura = 500, 500
 	tela = pygame.display.set_mode((largura, altura))
-	pygame.display.set_caption("Blocks Math - End Game")
+	pygame.display.set_caption("Blocks Math - End Level")
 	sair = False
 	
 	green, red, white = (50, 220, 50), (220, 50, 50), (255, 255, 255)
@@ -317,6 +345,11 @@ def endlevel(result):
 	fonte = pygame.font.get_default_font()
 	h1 = pygame.font.SysFont(fonte, 30)
 	
+	if result == "win":
+		jogador['level'] +=1
+	elif result == "lose":
+		jogador['level'] +=0	
+
 	while sair != True:
 
 		for evento in pygame.event.get():
@@ -329,16 +362,17 @@ def endlevel(result):
 		if result == "win":
 			color = green
 			text = "You Win"
-
+			
 		elif result == "lose":
 			color = red
 			text = "You Lose"
 
  		jogador['blocos'] = 0
- 		
+
 		tela.fill(color)
 		texto = h1.render(text, 1, white)
 		tela.blit(texto, (200, 240))
 		pygame.display.update()	
+
 
 menu()
