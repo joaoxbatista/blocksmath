@@ -199,7 +199,6 @@ def movePlayer(evento, nivel):
 
 #FUNÇAO QUE DESENHA A TELA DO MENU
 def menu():
-
 	pygame.init()
 	jogador['next'] = False
 	tela = pygame.display.set_mode((460, 420))
@@ -207,31 +206,28 @@ def menu():
 	relogio = pygame.time.Clock()
 	fps = 25
 	sair = False
-
+	
 	background = pygame.image.load('imgs/menu.jpg')
 	
-	pygame.mixer.init()
-	music = pygame.mixer.Sound('sounds/music.ogg')
-
-	music.play()
-	level = 0
+	opc = 0
 
 	while sair != True:
 		
 		for evento in pygame.event.get():
 			if evento.type == pygame.QUIT:
+				sair = True
 				pygame.quit()
 
 			if evento.type == pygame.KEYDOWN:
 		
 				if evento.key == pygame.K_1:
-					level = 1
+					opc = 1
 					sair = True
 				if evento.key == pygame.K_2:
-					level = 2
+					opc = 2
 					sair = True
 				if evento.key == pygame.K_3:
-					level = 3
+					opc = 3
 					sair = True
 				if evento.key == pygame.K_4:
 					sair = True
@@ -240,7 +236,9 @@ def menu():
 		pygame.display.update()
 		relogio.tick(fps)
 
-	nivel(mapas, level)
+	pygame.quit()
+	nivel(mapas, opc)
+
 
 #FUNCAO DESENHA A TELA DO NIVEL
 def nivel(mapas, dificuldade):
@@ -356,7 +354,7 @@ def endlevel(result):
 
 			if evento.type == pygame.QUIT:
 
-				pygame.quit()
+				sair = True
 				menu()
 
 		if result == "win":
@@ -374,5 +372,5 @@ def endlevel(result):
 		tela.blit(texto, (200, 240))
 		pygame.display.update()	
 
-
+	pygame.quit()
 menu()
